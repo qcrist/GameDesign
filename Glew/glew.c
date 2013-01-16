@@ -1,4 +1,5 @@
 #pragma comment (lib, "opengl32.lib")
+
 /*
 ** The OpenGL Extension Wrangler Library
 ** Copyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>
