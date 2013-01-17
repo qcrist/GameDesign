@@ -13,6 +13,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{900EE4FE-174B-4B6F-B94D-164DCA7CADB9}</ProjectGuid>
     <RootNamespace>Game</RootNamespace>
