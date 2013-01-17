@@ -1,5 +1,32 @@
 #include "main.h"
 
+long next_frame;
+long last_frame;
+int fps_limit = 60;
+void fps()
+{
+	long now = clock();
+	if (now>=next_frame)
+	{
+		next_frame = now + CLOCKS_PER_SEC/fps_limit;
+		float current_fps = CLOCKS_PER_SEC/(float)(now-last_frame);
+		last_frame = clock();
+		char buf[50];
+		sprintf(buf,"FPS: %f",current_fps);
+		glutSetWindowTitle(buf);
+		draw();
+	}else{
+		if (next_frame-now > 10)
+		{
+			sleep(10);
+		}
+		else 
+		{
+			sleep(next_frame-now);
+		}
+	}
+}
+
 int main(int argc, char** args)
 {
 	//GLUT
@@ -8,7 +35,7 @@ int main(int argc, char** args)
 	glutInitWindowSize(800,600);
 	glutCreateWindow("OpenGL Window");
 	glutDisplayFunc(draw);
-	glutIdleFunc(draw);
+	glutIdleFunc(fps);
 	glutReshapeFunc(resize);
 
 	//GLEW
@@ -35,8 +62,26 @@ void resize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+int r = 0;
 void draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	glTranslated(0,0,-5);
+	glRotatef(r++,0,1,0);
+	glRotatef(r*2,1,0,0);
+	glRotatef(r*3,0,0,1);
+	glBegin(GL_QUADS);
+	glColor3f(0,0,0);
+	glVertex3f(-1,-1,0);
+	glColor3f(0,0,1);
+	glVertex3f(1,-1,0);
+	glColor3f(0,1,0);
+	glVertex3f(1,1,0);
+	glColor3f(1,0,0);
+	glVertex3f(-1,1,0);
+	glEnd();
+
 	glutSwapBuffers();
 }

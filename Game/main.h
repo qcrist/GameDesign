@@ -7,6 +7,12 @@
 #include <GL/glut.h>
 #endif
 
+#include <time.h>
+#include <windows.h>
+#define sleep(ms) Sleep(ms);
+
+#include <stdio.h>
+
 #undef glGenBuffers
 #undef glCreateBuffer
 #undef glBindBuffer
