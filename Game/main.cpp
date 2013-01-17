@@ -1,33 +1,6 @@
 #include "main.h"
 #include "img.h"
 
-long next_frame;
-long last_frame;
-int fps_limit = 60;
-void fps()
-{
-	long now = clock();
-	if (now>=next_frame)
-	{
-		next_frame = now + CLOCKS_PER_SEC/fps_limit;
-		float current_fps = CLOCKS_PER_SEC/(float)(now-last_frame);
-		last_frame = clock();
-		char buf[50];
-		sprintf(buf,"FPS: %f",current_fps);
-		glutSetWindowTitle(buf);
-		draw();
-	}else{
-		if (next_frame-now > 10)
-		{
-			sleep(10);
-		}
-		else 
-		{
-			sleep(next_frame-now);
-		}
-	}
-}
-
 int main(int argc, char** args)
 {
 	//GLUT
@@ -97,4 +70,32 @@ void draw()
 	glEnd();
 
 	glutSwapBuffers();
+}
+
+
+long next_frame;
+long last_frame;
+int fps_limit = 60;
+void fps()
+{
+	long now = clock();
+	if (now>=next_frame)
+	{
+		next_frame = now + CLOCKS_PER_SEC/fps_limit;
+		float current_fps = CLOCKS_PER_SEC/(float)(now-last_frame);
+		last_frame = clock();
+		char buf[50];
+		sprintf(buf,"FPS: %f",current_fps);
+		glutSetWindowTitle(buf);
+		draw();
+	}else{
+		if (next_frame-now > 10)
+		{
+			sleep(10);
+		}
+		else 
+		{
+			sleep(next_frame-now);
+		}
+	}
 }

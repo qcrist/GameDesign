@@ -26,3 +26,4 @@
 int main(int argc, char **argv);
 void draw(void);
 void resize(int w, int h);
+void fps();
