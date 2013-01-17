@@ -68,6 +68,11 @@
   <ItemGroup>
     <ClCompile Include="glew.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="glew.h" />
+    <ClInclude Include="glxew.h" />
+    <ClInclude Include="wglew.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

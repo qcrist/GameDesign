@@ -1,4 +1,5 @@
 #include "main.h"
+#include "img.h"
 
 long next_frame;
 long last_frame;
@@ -47,6 +48,9 @@ int main(int argc, char** args)
 	glEnable(GL_TEXTURE_2D);
 	glPolygonMode(GL_BACK,GL_LINE);
 
+	int width,height;
+	png_texture_load("Untitled.png",&width,&height);
+
 	//Start
 	glutMainLoop();
 	return 0;
@@ -69,18 +73,27 @@ void draw()
 	glLoadIdentity();
 
 	glTranslated(0,0,-5);
-	glRotatef(r++,0,1,0);
-	glRotatef(r*2,1,0,0);
-	glRotatef(r*3,0,0,1);
+	//glRotatef(r++,0,1,0);
+	//glRotatef(r*2,1,0,0);
+	//glRotatef(r*3,0,0,1);
 	glBegin(GL_QUADS);
+
+	glTexCoord2d(0,0);
 	glColor3f(0,0,0);
 	glVertex3f(-1,-1,0);
+
+	glTexCoord2d(1,0);
 	glColor3f(0,0,1);
 	glVertex3f(1,-1,0);
+
+	glTexCoord2d(1,1);
 	glColor3f(0,1,0);
 	glVertex3f(1,1,0);
+
+	glTexCoord2d(0,1);
 	glColor3f(1,0,0);
 	glVertex3f(-1,1,0);
+
 	glEnd();
 
 	glutSwapBuffers();

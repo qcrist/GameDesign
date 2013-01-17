@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Freeglut", "Freeglut\Freeglut.vcxproj", "{DC07ED6F-F176-4D98-8569-1B0CE79981D9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibPNG", "LibPNG\LibPNG.vcxproj", "{1E605188-9EFD-4419-AF28-248019BBF3FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +31,10 @@ Global
 		{DC07ED6F-F176-4D98-8569-1B0CE79981D9}.Debug|Win32.Build.0 = Debug|Win32
 		{DC07ED6F-F176-4D98-8569-1B0CE79981D9}.Release|Win32.ActiveCfg = Release|Win32
 		{DC07ED6F-F176-4D98-8569-1B0CE79981D9}.Release|Win32.Build.0 = Release|Win32
+		{1E605188-9EFD-4419-AF28-248019BBF3FD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1E605188-9EFD-4419-AF28-248019BBF3FD}.Debug|Win32.Build.0 = Debug|Win32
+		{1E605188-9EFD-4419-AF28-248019BBF3FD}.Release|Win32.ActiveCfg = Release|Win32
+		{1E605188-9EFD-4419-AF28-248019BBF3FD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

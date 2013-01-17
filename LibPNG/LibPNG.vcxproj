@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DC07ED6F-F176-4D98-8569-1B0CE79981D9}</ProjectGuid>
-    <RootNamespace>Freeglut</RootNamespace>
+    <ProjectGuid>{1E605188-9EFD-4419-AF28-248019BBF3FD}</ProjectGuid>
+    <RootNamespace>LibPNG</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,16 +40,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.dll</TargetExt>
-    <TargetName>freeglut</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <TargetName>libpng</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>FREEGLUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>symbols.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -66,39 +67,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="freeglut_callbacks.c" />
-    <ClCompile Include="freeglut_cursor.c" />
-    <ClCompile Include="freeglut_display.c" />
-    <ClCompile Include="freeglut_ext.c" />
-    <ClCompile Include="freeglut_font.c" />
-    <ClCompile Include="freeglut_font_data.c" />
-    <ClCompile Include="freeglut_gamemode.c" />
-    <ClCompile Include="freeglut_geometry.c" />
-    <ClCompile Include="freeglut_glutfont_definitions.c" />
-    <ClCompile Include="freeglut_init.c" />
-    <ClCompile Include="freeglut_input_devices.c" />
-    <ClCompile Include="freeglut_joystick.c" />
-    <ClCompile Include="freeglut_main.c" />
-    <ClCompile Include="freeglut_menu.c" />
-    <ClCompile Include="freeglut_misc.c" />
-    <ClCompile Include="freeglut_overlay.c" />
-    <ClCompile Include="freeglut_spaceball.c" />
-    <ClCompile Include="freeglut_state.c" />
-    <ClCompile Include="freeglut_stroke_mono_roman.c" />
-    <ClCompile Include="freeglut_stroke_roman.c" />
-    <ClCompile Include="freeglut_structure.c" />
-    <ClCompile Include="freeglut_teapot.c" />
-    <ClCompile Include="freeglut_videoresize.c" />
-    <ClCompile Include="freeglut_window.c" />
-    <ClCompile Include="freeglut_xinput.c" />
+    <None Include="symbols.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="freeglut.h" />
-    <ClInclude Include="freeglut_ext.h" />
-    <ClInclude Include="freeglut_internal.h" />
-    <ClInclude Include="freeglut_std.h" />
-    <ClInclude Include="freeglut_teapot_data.h" />
-    <ClInclude Include="glut.h" />
+    <ClCompile Include="adler32.c" />
+    <ClCompile Include="compress.c" />
+    <ClCompile Include="crc32.c" />
+    <ClCompile Include="deflate.c" />
+    <ClCompile Include="gzclose.c" />
+    <ClCompile Include="gzlib.c" />
+    <ClCompile Include="gzread.c" />
+    <ClCompile Include="gzwrite.c" />
+    <ClCompile Include="infback.c" />
+    <ClCompile Include="inffast.c" />
+    <ClCompile Include="inflate.c" />
+    <ClCompile Include="inftrees.c" />
+    <ClCompile Include="png.c" />
+    <ClCompile Include="pngerror.c" />
+    <ClCompile Include="pngget.c" />
+    <ClCompile Include="pngmem.c" />
+    <ClCompile Include="pngpread.c" />
+    <ClCompile Include="pngread.c" />
+    <ClCompile Include="pngrio.c" />
+    <ClCompile Include="pngrtran.c" />
+    <ClCompile Include="pngrutil.c" />
+    <ClCompile Include="pngset.c" />
+    <ClCompile Include="pngtest.c" />
+    <ClCompile Include="pngtrans.c" />
+    <ClCompile Include="pngwio.c" />
+    <ClCompile Include="pngwrite.c" />
+    <ClCompile Include="pngwtran.c" />
+    <ClCompile Include="pngwutil.c" />
+    <ClCompile Include="trees.c" />
+    <ClCompile Include="uncompr.c" />
+    <ClCompile Include="zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="crc32.h" />
+    <ClInclude Include="deflate.h" />
+    <ClInclude Include="gzguts.h" />
+    <ClInclude Include="inffast.h" />
+    <ClInclude Include="inffixed.h" />
+    <ClInclude Include="inflate.h" />
+    <ClInclude Include="inftrees.h" />
+    <ClInclude Include="png.h" />
+    <ClInclude Include="pngconf.h" />
+    <ClInclude Include="pngdebug.h" />
+    <ClInclude Include="pnginfo.h" />
+    <ClInclude Include="pnglibconf.h" />
+    <ClInclude Include="pngpriv.h" />
+    <ClInclude Include="pngstruct.h" />
+    <ClInclude Include="trees.h" />
+    <ClInclude Include="zconf.h" />
+    <ClInclude Include="zlib.h" />
+    <ClInclude Include="zutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
