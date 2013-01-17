@@ -33,7 +33,7 @@ void fps();
 
 typedef struct
 {
-	double x,y,z;
+	double x,y,z; 
 }vector3d;
 
 typedef struct

@@ -5,7 +5,7 @@
 vector3d pos;
 vector3d rot;
 vector2i window_size;
-
+ 
 int main(int argc, char** args)
 {
 	//GLUT
@@ -33,8 +33,9 @@ int main(int argc, char** args)
 	glEnable(GL_TEXTURE_2D);
 	glPolygonMode(GL_BACK,GL_LINE);
 
-	int width,height;
-	png_texture_load("untitled.png",&width,&height);
+	unsigned int width,height;
+//	readPNG("untitled.png",width,height);
+	png_texture_load("untitled.png",width,height);
 
 	//Start
 	glutMainLoop();
@@ -62,8 +63,8 @@ void draw()
 	glRotated(rot.y,0,1,0);
 	glTranslated(pos.x,pos.y,pos.z);
 
-	float yrad = toRad(rot.y);
-	float xrad = toRad(rot.x);
+	double yrad = toRad(rot.y);
+	double xrad = toRad(rot.x);
 
 	if (keys['w'])
 	{

@@ -1,26 +1,22 @@
 #include "img.h"
 
-GLuint png_texture_load(const char * file_name, int * width, int * height)
+png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height)
 {
 	png_byte header[8];
-
-	FILE *fp = fopen(file_name, "rb");
-	if (fp == 0)
+	FILE *fp = fopen(file, "rb");
+	if (!fp)
 	{
-		perror(file_name);
+		fprintf(stderr, "error: Couldn't open %s\n", file);
 		return 0;
 	}
-
 	// read the header
 	fread(header, 1, 8, fp);
-
-	if (png_sig_cmp(header, 0, 8))
+	if (png_sig_cmp(header, 0, 8)) //Test if not png
 	{
-		fprintf(stderr, "error: %s is not a PNG.\n", file_name);
+		fprintf(stderr, "error: %s is not a PNG.\n", file);
 		fclose(fp);
 		return 0;
 	}
-
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
@@ -28,7 +24,6 @@ GLuint png_texture_load(const char * file_name, int * width, int * height)
 		fclose(fp);
 		return 0;
 	}
-
 	// create png info struct
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
@@ -38,7 +33,6 @@ GLuint png_texture_load(const char * file_name, int * width, int * height)
 		fclose(fp);
 		return 0;
 	}
-
 	// create png info struct
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info)
@@ -66,88 +60,49 @@ GLuint png_texture_load(const char * file_name, int * width, int * height)
 	// read all the info up to the image data
 	png_read_info(png_ptr, info_ptr);
 
-	// variables to pass to get info
-	int bit_depth, color_type;
-	png_uint_32 temp_width, temp_height;
+	width = png_get_image_width(png_ptr,info_ptr);
+	height = png_get_image_height(png_ptr,info_ptr);
 
-	// get info about png
-	png_get_IHDR(png_ptr, info_ptr, &temp_width, &temp_height, &bit_depth, &color_type,
-		NULL, NULL, NULL);
-
-	if (width){ *width = temp_width; }
-	if (height){ *height = temp_height; }
+	png_set_packing(png_ptr); //expand bit depths lower than 8
+	png_set_strip_16(png_ptr); //reduce bit depths higher than 8
+	png_set_add_alpha(png_ptr,255,PNG_FILLER_AFTER); //add alpha if not present
+	png_set_expand(png_ptr); //
 
 	// Update the png info struct.
 	png_read_update_info(png_ptr, info_ptr);
 
-	// Row size in bytes.
+	int depth = png_get_bit_depth(png_ptr,info_ptr);
 	int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 
-	int image_bit_depth = NULL;
-	switch(rowbytes/(*width)*8)
-	{
-	case 24: 
-		image_bit_depth=GL_RGB;
-		break;
-	case 32: 
-		image_bit_depth=GL_RGBA;
-		break;
-	}
-
-	if (image_bit_depth==NULL)
-	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		fclose(fp);
-		printf("Bit depth of image not supported! (%d)\n",rowbytes/(*width)*8);
-		return NULL;
-	}
-	// glTexImage2d requires rows to be 4-byte aligned
-	rowbytes += 3 - ((rowbytes-1) % 4);
-
-	// Allocate the image_data as a big block, to be given to opengl
-	png_byte * image_data;
-	image_data = (png_byte*)malloc(rowbytes * temp_height * sizeof(png_byte)+15);
-	if (image_data == NULL)
-	{
-		fprintf(stderr, "error: could not allocate memory for PNG image data\n");
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		fclose(fp);
-		return 0;
-	}
-
-	// row_pointers is for pointing to image_data for reading the png with libpng
-	png_bytep * row_pointers = (png_bytep*)malloc(temp_height * sizeof(png_bytep));
-	if (row_pointers == NULL)
-	{
-		fprintf(stderr, "error: could not allocate memory for PNG row pointers\n");
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		free(image_data);
-		fclose(fp);
-		return 0;
-	}
-
-	// set the individual row_pointers to point at the correct offsets of image_data
-	png_uint_32 i;
-	for (i = 0; i < temp_height; i++)
-	{
-		row_pointers[temp_height - 1 - i] = image_data + i * rowbytes;
-	}
-
+	png_byte* image_data = (png_byte*)malloc(height*rowbytes);
+	png_byte** row_pointers = (png_byte**)malloc(height*sizeof(png_byte*));
+	for (unsigned int i=0; i<height; i++)
+		row_pointers[height-1-i]=image_data + i*rowbytes;
+	png_set_rows(png_ptr, info_ptr, row_pointers);
+	
 	// read the png into image_data through row_pointers
 	png_read_image(png_ptr, row_pointers);
+	png_read_end(png_ptr,end_info);
 
+	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+	fclose(fp);
+	free(row_pointers);
+	return image_data;
+}
+
+GLuint png_texture_load(const char * file, unsigned int & width, unsigned int & height)
+{
+	png_byte* image_data = readPNG(file,width,height);
+	 
 	// Generate the OpenGL texture object
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, image_bit_depth, temp_width, temp_height, 0, image_bit_depth, GL_UNSIGNED_BYTE, image_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// clean up
-	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-	fclose(fp);
 	free(image_data);
-	free(row_pointers);
 	return texture;
 }

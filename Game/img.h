@@ -2,4 +2,10 @@
 #include <gl/glew.h>
 #include <gl/glut.h>
 
-GLuint png_texture_load(const char * file_name, int * width, int * height);
+typedef struct
+{
+	unsigned char r,g,b,a;
+}color3ub;
+
+GLuint png_texture_load(const char * file, unsigned int & width, unsigned int & height);
+png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height);
