@@ -13,6 +13,8 @@ unsigned int minimap_mask;
 unsigned int minimap_size = 200;
 unsigned int mapVBO;
 unsigned int minimap;
+unsigned int floorTexture;
+unsigned int map_vertex_count;
 color3ub* map_data;
 
 
@@ -32,10 +34,13 @@ void ortho()
 	glMatrixMode(GL_MODELVIEW);
 }
 
+#define texswap(x,y,a,b,c,d) (float)(x%2?(y%2?a:b):(y%2?c:d))
+
 void initMap(const char* file)
 {
 	unsigned int width, height;
-	map_data = (color3ub*)readPNG("map.png",width,height);
+	floorTexture = loadTexture("floor.png",width,height);
+	map_data = (color3ub*)readPNG(file,width,height);
 	map_size.x = width;
 	map_size.y = height;
 
@@ -43,42 +48,70 @@ void initMap(const char* file)
 	int at = 0;
 	glGenBuffers(1,&mapVBO);
 	glBindBuffer(GL_ARRAY_BUFFER,mapVBO);
-	int h=0;
-
+	float h=0;
+	float h2=3;
 	for (unsigned int y=0;y<height;y++)
 		for (unsigned int x=0;x<width;x++)
 		{
 			color3ub* pixel = map_data + (x) + width*y;
-			vbo[at++] = x-.5;
-			vbo[at++] = h;
-			vbo[at++] = y-.5;
-			vbo[at++] = pixel->r/255.f;
-			vbo[at++] = pixel->g/255.f;
-			vbo[at++] = pixel->b/255.f;
+			if (*pixel==color3ub(76,76,76,255) || *pixel==color3ub(128,128,128,255))
+			{
+				if (*pixel==color3ub(76,76,76,255))
+				{
+					pos.x = -(float)x;
+					pos.z = -(float)y;
+				}
+				vbo[at++] = x-.5f;
+				vbo[at++] = h;
+				vbo[at++] = y-.5f;
+				vbo[at++] = texswap(x,y,0,0,1,1);
+				vbo[at++] = texswap(x,y,0,1,1,0);
 
-			vbo[at++] = x-.5;
-			vbo[at++] = h;
-			vbo[at++] = y+.5;
-			vbo[at++] = pixel->r/255.f;
-			vbo[at++] = pixel->g/255.f;
-			vbo[at++] = pixel->b/255.f;
+				vbo[at++] = x-.5f;
+				vbo[at++] = h;
+				vbo[at++] = y+.5f;
+				vbo[at++] = texswap(x,y,0,1,1,0);
+				vbo[at++] = texswap(x,y,1,1,0,0);
 
-			vbo[at++] = x+.5;
-			vbo[at++] = h;
-			vbo[at++] = y+.5;
-			vbo[at++] = pixel->r/255.f;
-			vbo[at++] = pixel->g/255.f;
-			vbo[at++] = pixel->b/255.f;
+				vbo[at++] = x+.5f;
+				vbo[at++] = h;
+				vbo[at++] = y+.5f;
+				vbo[at++] = texswap(x,y,1,1,0,0);
+				vbo[at++] = texswap(x,y,1,0,0,1);
 
-			vbo[at++] = x+.5;
-			vbo[at++] = h;
-			vbo[at++] = y-.5;
-			vbo[at++] = pixel->r/255.f;
-			vbo[at++] = pixel->g/255.f;
-			vbo[at++] = pixel->b/255.f;
+				vbo[at++] = x+.5f;
+				vbo[at++] = h;
+				vbo[at++] = y-.5f;
+				vbo[at++] = texswap(x,y,1,0,0,1);
+				vbo[at++] = texswap(x,y,0,0,1,1);
 
+				vbo[at++] = x-.5f;
+				vbo[at++] = h2;
+				vbo[at++] = y-.5f;
+				vbo[at++] = texswap(x,y,0,0,1,1);
+				vbo[at++] = texswap(x,y,0,1,1,0);
+
+				vbo[at++] = x+.5f;
+				vbo[at++] = h2;
+				vbo[at++] = y-.5f;
+				vbo[at++] = texswap(x,y,1,0,0,1);
+				vbo[at++] = texswap(x,y,0,0,1,1);
+
+				vbo[at++] = x+.5f;
+				vbo[at++] = h2;
+				vbo[at++] = y+.5f;
+				vbo[at++] = texswap(x,y,1,1,0,0);
+				vbo[at++] = texswap(x,y,1,0,0,1);
+
+				vbo[at++] = x-.5f;
+				vbo[at++] = h2;
+				vbo[at++] = y+.5f;
+				vbo[at++] = texswap(x,y,0,1,1,0);
+				vbo[at++] = texswap(x,y,1,1,0,0);
+			}
 		}
-		glBufferData(GL_ARRAY_BUFFER,width*height*1024,vbo,GL_STATIC_DRAW);
+		map_vertex_count = at/5;
+		glBufferData(GL_ARRAY_BUFFER,map_vertex_count * 5 * sizeof(float),vbo,GL_STATIC_DRAW);
 
 
 		glGenTextures(1, &minimap_mask);
@@ -87,6 +120,7 @@ void initMap(const char* file)
 		memset(clear,0,height*width*4);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, clear);
 		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,clear);
+		free(clear);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_BORDER); 
@@ -99,41 +133,47 @@ void initMap(const char* file)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_BORDER); 
 		glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_BORDER);
+
 }
 
 void drawMap()
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glBindTexture(GL_TEXTURE_2D,0);
+	glColor3f(1,1,1);
+	glBindTexture(GL_TEXTURE_2D,floorTexture);
 	glBindBuffer(GL_ARRAY_BUFFER,mapVBO);
-	glVertexPointer(3,GL_FLOAT,sizeof(float)*6,0);
-	glColorPointer(3,GL_FLOAT,sizeof(float)*6,(void*)(sizeof(float)*3));
-	glDrawArrays(GL_QUADS,0,map_size.x*map_size.y*4);
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glVertexPointer(3,GL_FLOAT,sizeof(float)*5,0);
+	glTexCoordPointer(2,GL_FLOAT,sizeof(float)*5,(void*)(sizeof(float)*3));
+	glDrawArrays(GL_QUADS,0,map_vertex_count);
 }
 
 void drawMiniMap()
 {
 	ortho();
+	glPushMatrix();
 	glLoadIdentity();
 
-	int zoom = 20;
+	int zoom = 50;
 	double rady1 = toRad(-rot.y+45);
 	double rady2 = toRad(-rot.y+135);
 	double rady3 = toRad(-rot.y+225);
 	double rady4 = toRad(-rot.y+315);
-	float x = -pos.x+.5;
-	float z = -pos.z+.5;
+	double x = -pos.x+.5f;
+	double z = -pos.z+.5f;
 
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	glBegin(GL_QUADS);
 	glColor3f(.2f,.2f,.2f);
-	glVertex3f(0,0,0);
-	glVertex3f(minimap_size,0,0);
-	glVertex3f(minimap_size,minimap_size,0);
-	glVertex3f(0,minimap_size,0);
+	glVertex3d(0,0,0);
+	glVertex3d(minimap_size,0,0);
+	glVertex3d(minimap_size,minimap_size,0);
+	glVertex3d(0,minimap_size,0);
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D,minimap);
@@ -141,16 +181,16 @@ void drawMiniMap()
 	glColor3f(1,1,1);
 
 	glTexCoord2d((x+zoom*cos(rady1))/map_size.x,(z-zoom*sin(rady1))/map_size.y);
-	glVertex2f(0,0);
+	glVertex2d(0,0);
 
 	glTexCoord2d((x+zoom*cos(rady2))/map_size.x,(z-zoom*sin(rady2))/map_size.y);
-	glVertex2f(minimap_size,0);
+	glVertex2d(minimap_size,0);
 
 	glTexCoord2d((x+zoom*cos(rady3))/map_size.x,(z-zoom*sin(rady3))/map_size.y);
-	glVertex2f(minimap_size,minimap_size);
+	glVertex2d(minimap_size,minimap_size);
 
 	glTexCoord2d((x+zoom*cos(rady4))/map_size.x,(z-zoom*sin(rady4))/map_size.y);
-	glVertex2f(0,minimap_size);
+	glVertex2d(0,minimap_size);
 
 	glEnd();
 
@@ -159,38 +199,37 @@ void drawMiniMap()
 	glColor3f(1,1,1);
 
 	glTexCoord2d((x+zoom*cos(rady1))/map_size.x,(z-zoom*sin(rady1))/map_size.y);
-	glVertex2f(0,0);
+	glVertex2d(0,0);
 
 	glTexCoord2d((x+zoom*cos(rady2))/map_size.x,(z-zoom*sin(rady2))/map_size.y);
-	glVertex2f(minimap_size,0);
+	glVertex2d(minimap_size,0);
 
 	glTexCoord2d((x+zoom*cos(rady3))/map_size.x,(z-zoom*sin(rady3))/map_size.y);
-	glVertex2f(minimap_size,minimap_size);
+	glVertex2d(minimap_size,minimap_size);
 
 	glTexCoord2d((x+zoom*cos(rady4))/map_size.x,(z-zoom*sin(rady4))/map_size.y);
-	glVertex2f(0,minimap_size);
+	glVertex2d(0,minimap_size);
 
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-	glPushMatrix();
 	glBegin(GL_LINES);
-	glColor4f(1,1,1,.2);
-	glVertex2f(minimap_size,minimap_size/2);
-	glVertex2f(0,minimap_size/2);
-	glVertex2f(minimap_size/2,0);
-	glVertex2f(minimap_size/2,minimap_size);
+	glColor4d(1,1,1,.2);
+	glVertex2d(minimap_size,minimap_size/2);
+	glVertex2d(0,minimap_size/2);
+	glVertex2d(minimap_size/2,0);
+	glVertex2d(minimap_size/2,minimap_size);
 	glEnd();
-	glPopMatrix();
 
 	glBegin(GL_LINE_LOOP);
 	glColor3d(.5,.5,.5);
 	glVertex3f(0,0,-1);
-	glVertex3f(minimap_size,0,0);
-	glVertex3f(minimap_size,minimap_size,0);
-	glVertex3f(0,minimap_size,0);
+	glVertex3d(minimap_size,0,0);
+	glVertex3d(minimap_size,minimap_size,0);
+	glVertex3d(0,minimap_size,0);
 	glEnd();
 
+	glPopMatrix();
 	projection();
 }
 
