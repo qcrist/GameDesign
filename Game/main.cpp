@@ -10,6 +10,7 @@ vector2i window_size;
 
 vector2i map_size;
 unsigned int minimap_mask;
+unsigned int minimap_size = 200;
 unsigned int mapVBO;
 unsigned int minimap;
 color3ub* map_data;
@@ -118,7 +119,6 @@ void drawMiniMap()
 	glLoadIdentity();
 
 	int zoom = 20;
-	zoom/=2;
 	double rady1 = toRad(-rot.y+45);
 	double rady2 = toRad(-rot.y+135);
 	double rady3 = toRad(-rot.y+225);
@@ -126,21 +126,31 @@ void drawMiniMap()
 	float x = -pos.x+.5;
 	float z = -pos.z+.5;
 
+	glBindTexture(GL_TEXTURE_2D,0);
+
+	glBegin(GL_QUADS);
+	glColor3f(.2f,.2f,.2f);
+	glVertex3f(0,0,0);
+	glVertex3f(minimap_size,0,0);
+	glVertex3f(minimap_size,minimap_size,0);
+	glVertex3f(0,minimap_size,0);
+	glEnd();
+
 	glBindTexture(GL_TEXTURE_2D,minimap);
 	glBegin(GL_QUADS);
 	glColor3f(1,1,1);
 
-	glTexCoord2d((x+zoom*cos(rady1))/32,(z-zoom*sin(rady1))/32);
+	glTexCoord2d((x+zoom*cos(rady1))/map_size.x,(z-zoom*sin(rady1))/map_size.y);
 	glVertex2f(0,0);
 
-	glTexCoord2d((x+zoom*cos(rady2))/32,(z-zoom*sin(rady2))/32);
-	glVertex2f(200,0);
+	glTexCoord2d((x+zoom*cos(rady2))/map_size.x,(z-zoom*sin(rady2))/map_size.y);
+	glVertex2f(minimap_size,0);
 
-	glTexCoord2d((x+zoom*cos(rady3))/32,(z-zoom*sin(rady3))/32);
-	glVertex2f(200,200);
+	glTexCoord2d((x+zoom*cos(rady3))/map_size.x,(z-zoom*sin(rady3))/map_size.y);
+	glVertex2f(minimap_size,minimap_size);
 
-	glTexCoord2d((x+zoom*cos(rady4))/32,(z-zoom*sin(rady4))/32);
-	glVertex2f(0,200);
+	glTexCoord2d((x+zoom*cos(rady4))/map_size.x,(z-zoom*sin(rady4))/map_size.y);
+	glVertex2f(0,minimap_size);
 
 	glEnd();
 
@@ -148,28 +158,37 @@ void drawMiniMap()
 	glBegin(GL_QUADS);
 	glColor3f(1,1,1);
 
-	glTexCoord2d((x+zoom*cos(rady1))/32,(z-zoom*sin(rady1))/32);
+	glTexCoord2d((x+zoom*cos(rady1))/map_size.x,(z-zoom*sin(rady1))/map_size.y);
 	glVertex2f(0,0);
 
-	glTexCoord2d((x+zoom*cos(rady2))/32,(z-zoom*sin(rady2))/32);
-	glVertex2f(200,0);
+	glTexCoord2d((x+zoom*cos(rady2))/map_size.x,(z-zoom*sin(rady2))/map_size.y);
+	glVertex2f(minimap_size,0);
 
-	glTexCoord2d((x+zoom*cos(rady3))/32,(z-zoom*sin(rady3))/32);
-	glVertex2f(200,200);
+	glTexCoord2d((x+zoom*cos(rady3))/map_size.x,(z-zoom*sin(rady3))/map_size.y);
+	glVertex2f(minimap_size,minimap_size);
 
-	glTexCoord2d((x+zoom*cos(rady4))/32,(z-zoom*sin(rady4))/32);
-	glVertex2f(0,200);
+	glTexCoord2d((x+zoom*cos(rady4))/map_size.x,(z-zoom*sin(rady4))/map_size.y);
+	glVertex2f(0,minimap_size);
 
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-	glTranslated(100,100,0);
-	glBegin(GL_QUADS);
-	glColor3f(1,1,1);
-	glVertex2f(-2,-2);
-	glVertex2f(2,-2);
-	glVertex2f(2,2);
-	glVertex2f(-2,2);
+	glPushMatrix();
+	glBegin(GL_LINES);
+	glColor4f(1,1,1,.2);
+	glVertex2f(minimap_size,minimap_size/2);
+	glVertex2f(0,minimap_size/2);
+	glVertex2f(minimap_size/2,0);
+	glVertex2f(minimap_size/2,minimap_size);
+	glEnd();
+	glPopMatrix();
+
+	glBegin(GL_LINE_LOOP);
+	glColor3d(.5,.5,.5);
+	glVertex3f(0,0,-1);
+	glVertex3f(minimap_size,0,0);
+	glVertex3f(minimap_size,minimap_size,0);
+	glVertex3f(0,minimap_size,0);
 	glEnd();
 
 	projection();
