@@ -1,4 +1,5 @@
 #include "sky.h"
+#include "img.h"
 
 unsigned int skyVBO;
 unsigned int skyTexture;
@@ -41,9 +42,10 @@ static float sky_data[] = {
 
 };
 
-void initSky(unsigned int texture)
+void initSky(const char* texture)
 {
-	skyTexture = texture;
+	unsigned int width,height;
+	skyTexture = loadTexture("sky.png",width,height);
 	glGenBuffers(1,&skyVBO);
 	glBindBuffer(GL_ARRAY_BUFFER,skyVBO);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(sky_data),sky_data,GL_STATIC_DRAW);

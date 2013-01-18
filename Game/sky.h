@@ -1,5 +1,5 @@
 #pragma once
 #include "gl.h"
 
-void initSky(unsigned int texture);
+void initSky(const char*);
 void drawSky();

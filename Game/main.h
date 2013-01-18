@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#define toRad(n) (n*0.01745329251994329576923690768489);
+#define toRad(n) ((n)*0.01745329251994329576923690768489);
 
 int main(int argc, char **argv);
 void draw(void);
