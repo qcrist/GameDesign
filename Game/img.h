@@ -1,11 +1,12 @@
+#pragma once
+
 #include <png.h>
-#include <gl/glew.h>
-#include <gl/glut.h>
+#include "gl.h"
 
 typedef struct
 {
 	unsigned char r,g,b,a;
 }color3ub;
 
-GLuint png_texture_load(const char * file, unsigned int & width, unsigned int & height);
+GLuint loadTexture(const char * file, unsigned int & width, unsigned int & height, unsigned int minFilter = GL_NEAREST, unsigned int magFilter = GL_NEAREST, unsigned int wrap = GL_REPEAT);
 png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height);

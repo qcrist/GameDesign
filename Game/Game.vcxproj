@@ -13,10 +13,14 @@
   <ItemGroup>
     <ClCompile Include="img.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sky.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gl.h" />
     <ClInclude Include="img.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="notes.h" />
+    <ClInclude Include="sky.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{900EE4FE-174B-4B6F-B94D-164DCA7CADB9}</ProjectGuid>
@@ -28,6 +32,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -59,6 +64,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)$(Configuration)\freeglut.lib;$(SolutionDir)$(Configuration)\glew.lib;$(SolutionDir)$(Configuration)\libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

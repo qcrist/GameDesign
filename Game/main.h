@@ -1,27 +1,12 @@
 #pragma once
 
-#include <gl/glew.h>
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
+#include "gl.h"
 
 #include <time.h>
 #include <windows.h>
 #define sleep(ms) Sleep(ms);
 
 #include <stdio.h>
-
-#undef glGenBuffers
-#undef glCreateBuffer
-#undef glBindBuffer
-#undef glDeleteBuffers
-
-#define glGenBuffers glGenBuffersARB
-#define glCreateBuffer glBindBufferARB
-#define glBindBuffer glBindBufferARB
-#define glDeleteBuffers glDeleteBuffersARB
 
 #define toRad(n) (n*0.01745329251994329576923690768489);
 

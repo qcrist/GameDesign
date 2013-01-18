@@ -77,7 +77,7 @@ png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height)
 	png_byte* image_data = (png_byte*)malloc(height*rowbytes);
 	png_byte** row_pointers = (png_byte**)malloc(height*sizeof(png_byte*));
 	for (unsigned int i=0; i<height; i++)
-		row_pointers[height-1-i]=image_data + i*rowbytes;
+		row_pointers[i]=image_data + i*rowbytes;
 	png_set_rows(png_ptr, info_ptr, row_pointers);
 	
 	// read the png into image_data through row_pointers
@@ -90,7 +90,7 @@ png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height)
 	return image_data;
 }
 
-GLuint png_texture_load(const char * file, unsigned int & width, unsigned int & height)
+GLuint loadTexture(const char * file, unsigned int & width, unsigned int & height, unsigned int minFilter, unsigned int magFilter, unsigned int wrap)
 {
 	png_byte* image_data = readPNG(file,width,height);
 	 
@@ -99,8 +99,11 @@ GLuint png_texture_load(const char * file, unsigned int & width, unsigned int & 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,wrap); 
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,wrap);
+
 
 	// clean up
 	free(image_data);
