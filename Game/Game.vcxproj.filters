@@ -24,6 +24,15 @@
     <ClCompile Include="sky.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="listeners.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -39,6 +48,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="listeners.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

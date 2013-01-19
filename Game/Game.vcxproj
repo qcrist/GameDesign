@@ -12,15 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="img.cpp" />
+    <ClCompile Include="listeners.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="map.cpp" />
     <ClCompile Include="sky.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl.h" />
     <ClInclude Include="img.h" />
+    <ClInclude Include="listeners.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="map.h" />
     <ClInclude Include="notes.h" />
     <ClInclude Include="sky.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{900EE4FE-174B-4B6F-B94D-164DCA7CADB9}</ProjectGuid>

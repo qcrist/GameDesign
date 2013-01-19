@@ -1,5 +1,4 @@
 #include "sky.h"
-#include "img.h"
 
 unsigned int skyVBO;
 unsigned int skyTexture;
