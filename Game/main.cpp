@@ -1,8 +1,7 @@
 #include "main.h"
 
-vector3d pos;
-vector3d rot;
-vector2i window_size;
+btKinematicCharacterController* character;
+btDiscreteDynamicsWorld* world;
 
 int main(int argc, char** args)
 {
@@ -27,13 +26,14 @@ int main(int argc, char** args)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
+	//Physics
+	setupWorld();
+
 	//Load Sky
 	initSky("sky.png");
 
 	//Read map
 	initMap("map.png");
-
-	pos.y = 1;
 
 	//Start
 	glutMainLoop();
@@ -42,3 +42,30 @@ int main(int argc, char** args)
 }
 
 
+void setupWorld()
+{
+	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+	broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver();
+	//stepheight .1
+	btPairCachingGhostObject* obj = new btPairCachingGhostObject();
+	obj->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+	btCapsuleShape* shape = new btCapsuleShape(.3f,.4f);
+	obj->setCollisionShape(shape);
+	character = new btKinematicCharacterController(obj,shape,.1f);
+	obj->setWorldTransform(btTransform::getIdentity());
+
+	world = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
+	world->addCollisionObject(character->getGhostObject(),btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter);
+	world->addAction(character);
+
+	pos = &obj->getWorldTransform().getOrigin();
+	rot = new btVector3(0,0,0);
+
+	world->setGravity(btVector3(0,-15,0));
+	character->setGravity(-world->getGravity().y());
+	character->setJumpSpeed(5);
+	character->setUseGhostSweepTest(false);
+}

@@ -1,5 +1,26 @@
 #include "listeners.h"
 
+btVector3* pos;
+btVector3* rot;
+vector2i window_size;
+float mat[16];
+
+float r = 0;
+void draw()
+{
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	testKeys();
+	glRotatef(rot->getX(),1,0,0);
+	glRotatef(rot->getY(),0,1,0);
+	glTranslated(-pos->getX(),-pos->getY()-.5,-pos->getZ());
+
+	drawSky();
+	drawMap();
+	drawMiniMap();
+	glutSwapBuffers();
+}
+
 void initListeners()
 {
 	glutDisplayFunc(draw);
@@ -13,31 +34,15 @@ void initListeners()
 	glutPassiveMotionFunc(mousemove);
 }
 
-float r = 0;
-void draw()
-{
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-	testKeys();
-	glRotated(rot.x,1,0,0);
-	glRotated(rot.y,0,1,0);
-	glTranslated(-pos.x,-pos.y,-pos.z);
-	//drawSky();
-	drawMap();
-	drawMiniMap();
-	glutSwapBuffers();
-}
-
-
 void testKeys()
 {
-	double yrad = toRad(rot.y);
-	double xrad = toRad(rot.x);
-	double cosy = cos(yrad);
-	double siny = sin(yrad);
+	float yrad = toRadf(rot->getY());
+	float xrad = toRadf(rot->getY());
+	float cosy = cosf(yrad);
+	float siny = sinf(yrad);
 
-	double dx = 0;
-	double dz = 0;
+	float dx = 0;
+	float dz = 0;
 	if (keys['s'])
 	{
 		dz += cosy/10;
@@ -61,6 +66,9 @@ void testKeys()
 	if (skeys[GLUT_KEY_END])
 		exit(0);
 
+	character->setWalkDirection(btVector3(dx,0,dz));
+
+	/*
 	if (dx<0)
 		if (pos.x+dx<-.5)
 			pos.x = -.5;
@@ -81,7 +89,7 @@ void testKeys()
 		if (pos.z+dz>map_size.y-.5)
 			pos.z = map_size.y-.5;
 		else
-			pos.z += dz;
+			pos.z += dz;*/
 }
 
 long next_frame;
@@ -92,12 +100,14 @@ void fps()
 	long now = clock();
 	if (now>=next_frame)
 	{
+		float spent = (now-last_frame)/1000.f;
 		next_frame = now + CLOCKS_PER_SEC/fps_limit;
 		float current_fps = CLOCKS_PER_SEC/(float)(now-last_frame);
 		last_frame = clock();
 		char buf[50];
 		sprintf(buf,"FPS: %f",current_fps);
 		glutSetWindowTitle(buf);
+		world->stepSimulation(spent);
 		draw();
 	}else{
 		if (next_frame-now > 10)
@@ -130,6 +140,8 @@ char skeys[256]; //<-- Max value of special key
 void keydown(unsigned char key,int,int)
 {
 	keys[key] = true;
+	if (key == ' ' && character->canJump() && character->onGround())
+		character->jump();
 }
 
 void keyup(unsigned char key,int,int)
@@ -157,11 +169,12 @@ void mousemove(int x, int y)
 		dy = dx = 0;
 	if (dx>30)
 		dx = dy = 0;
-	rot.x -= dy;
-	if (rot.x < -85)
-		rot.x = -85;
-	if (rot.x > 85)
-		rot.x = 85;
-	rot.y -= dx;
+	rot->setX(rot->getX()-dy);
+	if (rot->getX() < -85)
+		rot->setX(-85);
+	if (rot->getX() > 85)
+		rot->setX(85);
+	rot->setY(rot->getY()-dx);
+	//	rot.y -= dx;
 	glutWarpPointer(window_size.x/2,window_size.y/2);
 }

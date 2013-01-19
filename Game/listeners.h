@@ -7,8 +7,8 @@
 
 extern char keys[];
 extern char skeys[];
-extern struct vector3d pos;
-extern struct vector3d rot;
+extern class btVector3* pos;
+extern class btVector3* rot;
 extern struct vector2i window_size;
 
 void initListeners();
