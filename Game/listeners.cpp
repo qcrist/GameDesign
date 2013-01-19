@@ -21,7 +21,7 @@ void draw()
 	testKeys();
 	glRotated(rot.x,1,0,0);
 	glRotated(rot.y,0,1,0);
-	glTranslated(pos.x,-pos.y,pos.z);
+	glTranslated(-pos.x,-pos.y,-pos.z);
 	//drawSky();
 	drawMap();
 	drawMiniMap();
@@ -36,28 +36,52 @@ void testKeys()
 	double cosy = cos(yrad);
 	double siny = sin(yrad);
 
-	if (keys['w'])
-	{
-		pos.z += cosy/10;
-		pos.x -= siny/10;
-	}
+	double dx = 0;
+	double dz = 0;
 	if (keys['s'])
 	{
-		pos.z -= cosy/10;
-		pos.x += siny/10;
+		dz += cosy/10;
+		dx -= siny/10;
 	}
-	if (keys['a'])
+	if (keys['w'])
 	{
-		pos.z += siny/10;
-		pos.x += cosy/10;
+		dz -= cosy/10;
+		dx += siny/10;
 	}
 	if (keys['d'])
 	{
-		pos.z -= siny/10;
-		pos.x -= cosy/10;
+		dz += siny/10;
+		dx += cosy/10;
+	}
+	if (keys['a'])
+	{
+		dz -= siny/10;
+		dx -= cosy/10;
 	}
 	if (skeys[GLUT_KEY_END])
 		exit(0);
+
+	if (dx<0)
+		if (pos.x+dx<-.5)
+			pos.x = -.5;
+		else
+			pos.x += dx;
+	else
+		if (pos.x+dx>map_size.x-.5)
+			pos.x = map_size.x-.5;
+		else
+			pos.x += dx;
+
+	if (dz<0)
+		if (pos.z+dz<-.5)
+			pos.z = -.5;
+		else
+			pos.z += dz;
+	else
+		if (pos.z+dz>map_size.y-.5)
+			pos.z = map_size.y-.5;
+		else
+			pos.z += dz;
 }
 
 long next_frame;

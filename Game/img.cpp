@@ -1,14 +1,5 @@
 #include "img.h"
 
-bool color3ub::operator==(color3ub& color)
-{
-	return r==color.r && g==color.g && b==color.b;
-}
-
-color3ub::color3ub(unsigned char rr,unsigned char gg,unsigned char bb,unsigned char aa):r(rr),g(gg),b(bb),a(aa)
-{
-}
-
 png_byte* readPNG(const char* file, unsigned int& width, unsigned int& height)
 {
 	png_byte header[8];

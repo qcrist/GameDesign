@@ -31,8 +31,8 @@ void initMap(const char* file)
 			{
 				if (*pixel==color3ub(76,76,76,255))
 				{
-					pos.x = -(float)x;
-					pos.z = -(float)y;
+					pos.x = x;
+					pos.z = y;
 				}
 				vbo[at++] = x-.5f;
 				vbo[at++] = h;
@@ -131,13 +131,13 @@ void drawMiniMap()
 	glPushMatrix();
 	glLoadIdentity();
 
-	int zoom = 50;
+	int zoom = 10;
 	double rady1 = toRad(-rot.y+45);
 	double rady2 = toRad(-rot.y+135);
 	double rady3 = toRad(-rot.y+225);
 	double rady4 = toRad(-rot.y+315);
-	double x = -pos.x+.5f;
-	double z = -pos.z+.5f;
+	double x = pos.x+.5f;
+	double z = pos.z+.5f;
 
 	glBindTexture(GL_TEXTURE_2D,0);
 
