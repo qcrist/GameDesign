@@ -4,3 +4,5 @@
 
 void initSky(const char*);
 void drawSky();
+
+extern unsigned int skyTexture;

@@ -5,6 +5,7 @@
 #define toRadf(n) ((n)*0.01745329251994329576923690768489f)
 #define texswap(x,y,a,b,c,d) (float)(x%2?(y%2?a:b):(y%2?c:d))
 
+
 void projection();
 void ortho();
 
