@@ -26,10 +26,15 @@ unsigned int map_door_vbo;
 unsigned int map_door_count;
 unsigned int map_door_texture;
 
+unsigned int key_count;
+
 unsigned int minimap;
 color3ub* map_data;
 
 void* clear;
+
+std::vector<obj*>* map_keys = new std::vector<obj*>();
+std::vector<obj*>* map_doors = new std::vector<obj*>();
 
 #define STRIDE 5
 
@@ -49,20 +54,35 @@ void initMap(const char* file)
 	unsigned int* floor_indices = (unsigned int*)malloc(width*height*sizeof(unsigned int)*12); //Max
 	unsigned int* wall_indices = (unsigned int*)malloc(width*height*sizeof(unsigned int)*24); //Max?
 	unsigned int* exit_indices = (unsigned int*)malloc(width*height*sizeof(unsigned int)*24); //Max?
-	unsigned int* key_indices = (unsigned int*)malloc(width*height*sizeof(unsigned int)*24); //Max?
-	unsigned int* door_indices = (unsigned int*)malloc(width*height*sizeof(unsigned int)*24); //Max?
+	unsigned int* door_indices = (unsigned int*)malloc(sizeof(unsigned int)*6*4); //Max?
+	unsigned int* key_indices = (unsigned int*)malloc(sizeof(unsigned int)*6*5); //Max?
 	int at_v = 0;
 	int at_f = 0;
 	int at_w = 0;
 	int at_e = 0;
 	int at_k = 0;
 	int at_d = 0;
+
 	float floor_height = 0;
 	float ceiling_height = 3;
 	float middle_height =(ceiling_height-floor_height)/2;
 
 	btBoxShape* wall= new btBoxShape(btVector3(.5,middle_height,.5));
 	btBoxShape* box= new btBoxShape(btVector3(.5,.5,.5));
+
+	//KEY
+	backQuadHelper(vertexes,key_indices,at_v,at_k,0,.5,.5,.5,.5,0,0,1,1);
+	frontQuadHelper(vertexes,key_indices,at_v,at_k,0,.5,-.5,.5,.5,0,0,1,1);
+	rightQuadHelper(vertexes,key_indices,at_v,at_k,.5,.5,0,.5,.5,0,0,1,1);
+	leftQuadHelper(vertexes,key_indices,at_v,at_k,-.5,.5,0,.5,.5,0,0,1,1);
+	upQuadHelper(vertexes,key_indices,at_v,at_k,0,1,0,.5,.5,0,0,1,1);
+
+	//DOOR
+	backQuadHelper(vertexes,door_indices,at_v,at_d,0,middle_height,.5,.5,1.5,0,0,1,3);
+	frontQuadHelper(vertexes,door_indices,at_v,at_d,0,middle_height,-.5,.5,1.5,0,0,1,3);
+	rightQuadHelper(vertexes,door_indices,at_v,at_d,+.5,middle_height,0,1.5,.5,0,0,1,3);
+	leftQuadHelper(vertexes,door_indices,at_v,at_d,-.5,middle_height,0,1.5,.5,0,0,1,3);
+
 	for (unsigned int y=0;y<height;y++)
 		for (unsigned int x=0;x<width;x++)
 		{
@@ -112,25 +132,17 @@ void initMap(const char* file)
 				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,x,y,1,1);
 			}else if (*pixel==color3ub(255,216,0,255))
 			{
-				if ((int)y+1<map_size.y)
-					if (!(map_data[x + width*(y+1)]==color3ub(20,20,20,255)))
-						backQuadHelper(vertexes,key_indices,at_v,at_k,x,.5,y+.5,.5,.5,x,y,1,1);
-				if ((int)y-1>0)
-					if (!(map_data[x + width*(y-1)]==color3ub(20,20,20,255)))
-						frontQuadHelper(vertexes,key_indices,at_v,at_k,x,.5,y-.5,.5,.5,x,y,1,1);
-				if ((int)x+1<map_size.x)
-					if (!(map_data[x+1 + width*y]==color3ub(20,20,20,255)))
-						rightQuadHelper(vertexes,key_indices,at_v,at_k,x+.5,.5,y,.5,.5,x,y,1,1);
-				if ((int)x-1>0)
-					if (!(map_data[x-1 + width*y]==color3ub(20,20,20,255)))
-						leftQuadHelper(vertexes,key_indices,at_v,at_k,x-.5,.5,y,.5,.5,x,y,1,1);
-				upQuadHelper(vertexes,key_indices,at_v,at_k,x,1,y,.5,.5,x,y,1,1);
-				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,x,y,1,1);
-
+				obj* o = (obj*)malloc(sizeof(obj));
+				o->pos = btVector3(x,.0,y);
 				btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,.5,(float)y)));
 				btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(0,boxMotionState,box,btVector3(0,0,0));
 				btRigidBody* body = new btRigidBody(rigidBodyCI);
 				world->addRigidBody(body);
+				o->body = body;
+				map_keys->push_back(o);
+				body->setUserPointer(o);
+				upQuadHelper(vertexes,floor_indices,at_v,at_f,x,floor_height,y,.5,.5,x,y,1,1);
+				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,0,0,1,1);
 			}else if (*pixel==color3ub(127,51,0,255))
 			{
 				btDefaultMotionState* wallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,middle_height,(float)y)));
@@ -138,18 +150,13 @@ void initMap(const char* file)
 				btRigidBody* body = new btRigidBody(rigidBodyCI);
 				world->addRigidBody(body);
 
-				if ((int)y+1<map_size.y)
-					if (!(map_data[x + width*(y+1)]==color3ub(20,20,20,255)))
-						backQuadHelper(vertexes,door_indices,at_v,at_d,x,middle_height,y+.5,.5,1.5,x,y,1,3);
-				if ((int)y-1>0)
-					if (!(map_data[x + width*(y-1)]==color3ub(20,20,20,255)))
-						frontQuadHelper(vertexes,door_indices,at_v,at_d,x,middle_height,y-.5,.5,1.5,x,y,1,3);
-				if ((int)x+1<map_size.x)
-					if (!(map_data[x+1 + width*y]==color3ub(20,20,20,255)))
-						rightQuadHelper(vertexes,door_indices,at_v,at_d,x+.5,middle_height,y,1.5,.5,x,y,1,3);
-				if ((int)x-1>0)
-					if (!(map_data[x-1 + width*y]==color3ub(20,20,20,255)))
-						leftQuadHelper(vertexes,door_indices,at_v,at_d,x-.5,middle_height,y,1.5,.5,x,y,1,3);
+				obj* o = (obj*)malloc(sizeof(obj));
+				o->pos = btVector3(x,.0,y);
+				o->body = body;
+				map_doors->push_back(o);
+				body->setUserPointer(o);
+				upQuadHelper(vertexes,floor_indices,at_v,at_f,x,floor_height,y,.5,.5,x,y,1,1);
+				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,0,0,1,1);
 			}
 		}
 		map_floor_count = at_f;
@@ -271,11 +278,25 @@ void drawMap()
 
 	glBindTexture(GL_TEXTURE_2D,map_key_texture);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,map_key_vbo);
-	glDrawElements(GL_TRIANGLES,map_key_count,GL_UNSIGNED_INT,0);
+	for (int i=0;i<map_keys->size();i++)
+	{
+		obj* o = map_keys->operator[](i);
+		glPushMatrix();
+		glTranslated(o->pos.x(),0,o->pos.z());
+		glDrawElements(GL_TRIANGLES,map_key_count,GL_UNSIGNED_INT,0);
+		glPopMatrix();
+	}
 
 	glBindTexture(GL_TEXTURE_2D,map_door_texture);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,map_door_vbo);
-	glDrawElements(GL_TRIANGLES,map_door_count,GL_UNSIGNED_INT,0);
+	for (int i=0;i<map_doors->size();i++)
+	{
+		obj* o = map_doors->operator[](i);
+		glPushMatrix();
+		glTranslated(o->pos.x(),0,o->pos.z());
+		glDrawElements(GL_TRIANGLES,map_door_count,GL_UNSIGNED_INT,0);
+		glPopMatrix();
+	}
 }
 
 void drawMiniMap()

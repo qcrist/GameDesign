@@ -5,11 +5,73 @@ btVector3* rot;
 vector2i window_size;
 float mat[16];
 
+void testForCollisions()
+{
+	int numManifolds = world->getDispatcher()->getNumManifolds();
+	for (int i=0;i<numManifolds;i++)
+	{
+		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
+		const btCollisionObject* obA = (contactManifold->getBody0());
+		const btCollisionObject* obB = (contactManifold->getBody1());
+
+		int numContacts = contactManifold->getNumContacts();
+		for (int j=0;j<numContacts;j++)
+		{
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			//if (pt.getDistance()<0.f)
+			{
+				btCollisionObject* other = NULL;
+				if (obA == character->getGhostObject())
+					other = (btCollisionObject*)obB;
+				else if (obB == character->getGhostObject())
+					other = (btCollisionObject*)obA;
+				if (other == NULL) continue;
+				if (other->getUserPointer()==NULL) continue;
+				int x = other->getWorldTransform().getOrigin().x();
+				int y = other->getWorldTransform().getOrigin().z();
+				for (int i=0;i<map_keys->size();i++)
+				{
+					if (map_keys->operator[](i)==other->getUserPointer())
+					{
+						color3ub c(128,128,128,255);
+						glBindTexture(GL_TEXTURE_2D,minimap);
+						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
+						map_keys->erase(map_keys->begin()+i);
+						world->removeCollisionObject(other);
+						key_count ++;
+						printf("Key + 1 :D\n");
+						return;
+					}
+				}
+				if (key_count==0)
+					continue;
+				for (int i=0;i<map_doors->size();i++)
+				{
+					if (map_doors->operator[](i)==other->getUserPointer())
+					{
+						color3ub c(128,128,128,255);
+						glBindTexture(GL_TEXTURE_2D,minimap);
+						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
+						key_count --;
+						map_doors->erase(map_doors->begin()+i);
+						world->removeCollisionObject(other);
+						printf("Door - 1 :D\n");
+						return;
+					}
+				}
+				return;
+			}
+		}
+	}
+}
+
+
 float r = 0;
 void draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
+	testForCollisions();
 	clearMap();
 	testKeys();
 	glRotatef(rot->getX(),1,0,0);
@@ -71,26 +133,26 @@ void testKeys()
 
 	/*
 	if (dx<0)
-		if (pos.x+dx<-.5)
-			pos.x = -.5;
-		else
-			pos.x += dx;
+	if (pos.x+dx<-.5)
+	pos.x = -.5;
 	else
-		if (pos.x+dx>map_size.x-.5)
-			pos.x = map_size.x-.5;
-		else
-			pos.x += dx;
+	pos.x += dx;
+	else
+	if (pos.x+dx>map_size.x-.5)
+	pos.x = map_size.x-.5;
+	else
+	pos.x += dx;
 
 	if (dz<0)
-		if (pos.z+dz<-.5)
-			pos.z = -.5;
-		else
-			pos.z += dz;
+	if (pos.z+dz<-.5)
+	pos.z = -.5;
 	else
-		if (pos.z+dz>map_size.y-.5)
-			pos.z = map_size.y-.5;
-		else
-			pos.z += dz;*/
+	pos.z += dz;
+	else
+	if (pos.z+dz>map_size.y-.5)
+	pos.z = map_size.y-.5;
+	else
+	pos.z += dz;*/
 }
 
 long next_frame;
