@@ -7,62 +7,88 @@ float mat[16];
 
 void testForCollisions()
 {
-	int numManifolds = world->getDispatcher()->getNumManifolds();
-	for (int i=0;i<numManifolds;i++)
-	{
-		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
-		const btCollisionObject* obA = (contactManifold->getBody0());
-		const btCollisionObject* obB = (contactManifold->getBody1());
+	 btManifoldArray   manifoldArray;
+	 btBroadphasePairArray& pairArray = character->getGhostObject()->getOverlappingPairCache()->getOverlappingPairArray();
+      int numPairs = pairArray.size();
 
-		int numContacts = contactManifold->getNumContacts();
-		for (int j=0;j<numContacts;j++)
-		{
-			btManifoldPoint& pt = contactManifold->getContactPoint(j);
-			//if (pt.getDistance()<0.f)
-			{
-				btCollisionObject* other = NULL;
-				if (obA == character->getGhostObject())
-					other = (btCollisionObject*)obB;
-				else if (obB == character->getGhostObject())
-					other = (btCollisionObject*)obA;
-				if (other == NULL) continue;
-				if (other->getUserPointer()==NULL) continue;
-				int x = other->getWorldTransform().getOrigin().x();
-				int y = other->getWorldTransform().getOrigin().z();
-				for (int i=0;i<map_keys->size();i++)
-				{
-					if (map_keys->operator[](i)==other->getUserPointer())
-					{
-						color3ub c(128,128,128,255);
-						glBindTexture(GL_TEXTURE_2D,minimap);
-						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
-						map_keys->erase(map_keys->begin()+i);
-						world->removeCollisionObject(other);
+      for (int i=0;i<numPairs;i++)
+      {
+         manifoldArray.clear();
+
+         const btBroadphasePair& pair = pairArray[i];
+
+		 //unless we manually perform collision detection on this pair, the contacts are in the dynamics world paircache:
+		 btBroadphasePair* collisionPair = world->getPairCache()->findPair(pair.m_pProxy0,pair.m_pProxy1);
+		 if (!collisionPair)
+			 continue;
+
+		 if (collisionPair->m_algorithm)
+			 collisionPair->m_algorithm->getAllContactManifolds(manifoldArray);
+
+		 for (int j=0;j<manifoldArray.size();j++)
+		 {
+			 btPersistentManifold* manifold = manifoldArray[j];
+			 const btCollisionObject* obA = (manifold->getBody0());
+			 const btCollisionObject* obB = (manifold->getBody1());
+			 for (int p=0;p<manifold->getNumContacts();p++)
+			 {
+				 const btManifoldPoint&pt = manifold->getContactPoint(p);
+				 btCollisionObject* other = NULL;
+				 if (obA == character->getGhostObject())
+					 other = (btCollisionObject*)obB;
+				 else if (obB == character->getGhostObject())
+					 other = (btCollisionObject*)obA;
+				 if (other == NULL) continue;
+				 if (other->getUserPointer()==NULL) continue;
+				 int x = other->getWorldTransform().getOrigin().x();
+				 int y = other->getWorldTransform().getOrigin().z();
+				 for (int i=0;i<map_keys->size();i++)
+				 {
+					 if (map_keys->operator[](i)==other->getUserPointer())
+					 {
+						 color3ub c(128,128,128,255);
+						 glBindTexture(GL_TEXTURE_2D,minimap);
+						 glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
+						 map_keys->erase(map_keys->begin()+i);
+						 world->removeCollisionObject(other);
 						key_count ++;
 						printf("Key + 1 :D\n");
 						return;
 					}
 				}
-				if (key_count==0)
-					continue;
-				for (int i=0;i<map_doors->size();i++)
+				if (key_count>0)
 				{
-					if (map_doors->operator[](i)==other->getUserPointer())
+					for (int i=0;i<map_doors->size();i++)
 					{
-						color3ub c(128,128,128,255);
-						glBindTexture(GL_TEXTURE_2D,minimap);
-						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
-						key_count --;
-						map_doors->erase(map_doors->begin()+i);
-						world->removeCollisionObject(other);
-						printf("Door - 1 :D\n");
-						return;
+						if (map_doors->operator[](i)==other->getUserPointer())
+						{
+							color3ub c(128,128,128,255);
+							glBindTexture(GL_TEXTURE_2D,minimap);
+							glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&c);
+							key_count --;
+							map_doors->erase(map_doors->begin()+i);
+							world->removeCollisionObject(other);
+							printf("Door - 1 :D\n");
+							return;
+						}
 					}
 				}
+				if (other->getUserPointer() == (void*)1)
+				{
+					destroyMap();
+					setupWorld();
+					level++;
+					if (level >= sizeof(maps)/sizeof(const char*))
+					{
+						printf("WIN!");
+						exit(5);
+					}
+					initMap(level);
+				}
 				return;
-			}
-		}
-	}
+			 }
+		 }
+	  }
 }
 
 
@@ -205,6 +231,10 @@ void keydown(unsigned char key,int,int)
 	keys[key] = true;
 	if (key == ' ' && character->canJump() && character->onGround())
 		character->jump();
+	if (key == '+' && zoom>5)
+		zoom -= 5;
+	if (key == '-')
+		zoom += 5;
 }
 
 void keyup(unsigned char key,int,int)

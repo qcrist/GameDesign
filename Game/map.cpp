@@ -33,20 +33,24 @@ color3ub* map_data;
 
 void* clear;
 
-std::vector<obj*>* map_keys = new std::vector<obj*>();
-std::vector<obj*>* map_doors = new std::vector<obj*>();
+int zoom = 15;
+
+std::vector<obj*>* map_keys;
+std::vector<obj*>* map_doors;
 
 #define STRIDE 5
 
-void initMap(const char* file)
+void initMap(int level)
 {
+map_keys = new std::vector<obj*>();
+map_doors = new std::vector<obj*>();
 	unsigned int width, height;
 	map_floor_texture = loadTexture("floor.png",width,height);
 	map_wall_texture = loadTexture("wall.png",width,height);
 	map_exit_texture = loadTexture("exit.png",width,height);
 	map_key_texture = loadTexture("key.png",width,height);
 	map_door_texture = loadTexture("door.png",width,height);
-	map_data = (color3ub*)readPNG(file,width,height);
+	map_data = (color3ub*)readPNG(maps[level],width,height);
 	map_size.x = width;
 	map_size.y = height;
 
@@ -69,7 +73,8 @@ void initMap(const char* file)
 
 	btBoxShape* wall= new btBoxShape(btVector3(.5,middle_height,.5));
 	btBoxShape* box= new btBoxShape(btVector3(.5,.5,.5));
-
+	btBoxShape* pad= new btBoxShape(btVector3(.5,.1,.5));
+	
 	//KEY
 	backQuadHelper(vertexes,key_indices,at_v,at_k,0,.5,.5,.5,.5,0,0,1,1);
 	frontQuadHelper(vertexes,key_indices,at_v,at_k,0,.5,-.5,.5,.5,0,0,1,1);
@@ -129,7 +134,13 @@ void initMap(const char* file)
 			}else if (*pixel==color3ub(0,255,33,255))
 			{
 				upQuadHelper(vertexes,exit_indices,at_v,at_e,x,floor_height,y,.5,.5,x,y,1,1);
-				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,x,y,1,1);
+				downQuadHelper(vertexes,exit_indices,at_v,at_e,x,ceiling_height,y,.5,.5,x,y,1,1);
+				btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,.1,(float)y)));
+				btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(0,boxMotionState,pad,btVector3(0,0,0));
+				btRigidBody* body = new btRigidBody(rigidBodyCI);
+				body->setUserPointer((void*)1);
+				world->addRigidBody(body);
+
 			}else if (*pixel==color3ub(255,216,0,255))
 			{
 				obj* o = (obj*)malloc(sizeof(obj));
@@ -241,6 +252,34 @@ void initMap(const char* file)
 		*/
 }
 
+void destroyMap()
+{
+	glDeleteTextures(1,&map_floor_texture);
+	glDeleteTextures(1,&map_wall_texture);
+	glDeleteTextures(1,&map_exit_texture);
+	glDeleteTextures(1,&map_key_texture);
+	glDeleteTextures(1,&map_door_texture);
+	glDeleteTextures(1,&minimap);
+	glDeleteTextures(1,&minimap_mask);
+	free(map_data);
+	auto objects = world->getCollisionObjectArray();
+	for (int i=0;i<objects.size();i++)
+	{
+		auto obj = objects.at(i);
+		world->removeCollisionObject(obj);
+		delete obj;
+	}
+	glDeleteBuffers(1,&map_vertex_vbo);
+	glDeleteBuffers(1,&map_floor_vbo);
+	glDeleteBuffers(1,&map_wall_vbo);
+	glDeleteBuffers(1,&map_exit_vbo);
+	glDeleteBuffers(1,&map_key_vbo);
+	glDeleteBuffers(1,&map_door_vbo);
+	delete world;
+	delete character;
+}
+
+
 void clearMap()
 {
 	int x = (int)(pos->getX()+.5);
@@ -305,7 +344,6 @@ void drawMiniMap()
 	glPushMatrix();
 	glLoadIdentity();
 
-	int zoom = 15;
 	double rady1 = toRad(-rot->getY()+45);
 	double rady2 = toRad(-rot->getY()+135);
 	double rady3 = toRad(-rot->getY()+225);

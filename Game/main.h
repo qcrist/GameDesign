@@ -13,6 +13,7 @@
 
 extern btKinematicCharacterController* character;
 extern btDiscreteDynamicsWorld* world;
+extern int level;
 
 int main(int argc, char **argv);
 void setupWorld();

@@ -7,11 +7,15 @@ extern struct color3ub* map_data;
 extern unsigned int minimap_mask;
 extern unsigned int minimap;
 extern unsigned int key_count;
+extern int zoom;
 
-void initMap(const char* file);
+void initMap(int level);
 void drawMap();
 void drawMiniMap();
 void clearMap();
+void destroyMap();
+
+static const char* maps[] = {"map0.png","map1.png"};
 
 
 void upQuadHelper(float*& vertexes, unsigned int*& indices, int& at_v, int& at_i,float x, float y,float z, float dx, float dz,unsigned int tsx,unsigned int tsy,float tx,float ty);
