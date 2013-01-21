@@ -47,7 +47,7 @@ void pause_resize(int w, int h)
 
 void pause_keydown(unsigned char key, int,int)
 {
-	if (key == ' ')
+	if (key == ' ' || key==27)
 	{
 		glutSetCursor(GLUT_CURSOR_NONE); 
 		initListeners();
@@ -289,6 +289,13 @@ void testKeys()
 		}
 		initMap(level);
 		keys['i'] = 0;
+	}
+	if (keys['h'] && keys['j'])
+	{
+		void* clear = malloc(map_size.y*map_size.x*4);
+		memset(clear,0,map_size.y*map_size.x*4);
+		glBindTexture(GL_TEXTURE_2D,minimap_mask);
+		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,map_size.x,map_size.y,GL_RGBA,GL_UNSIGNED_BYTE,clear);
 	}
 	if (skeys[GLUT_KEY_END])
 		exit(0);
