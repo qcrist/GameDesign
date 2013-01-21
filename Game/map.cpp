@@ -208,6 +208,7 @@ map_doors = new std::vector<obj*>();
 		clear = malloc(height*width*4);
 		memset(clear,0,height*width*4);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, clear);
+		memset(clear,0,height*width*4);
 //		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,clear);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -353,7 +354,7 @@ void drawMiniMap()
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	glBegin(GL_QUADS);
-	glColor4d(0,0,0,.8);
+	glColor4d(0,0,.1,.5);
 	glTexCoord2d(1,1);
 	glVertex3d(0,0,0);
 	glTexCoord2d(0,1);

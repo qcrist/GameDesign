@@ -180,7 +180,7 @@ void testKeys()
 		dz -= siny/scale;
 		dx -= cosy/scale;
 	}
-	if (keys['t'] && keys['y'] && keys['u'] && keys['i'])
+	if (keys['t'] && keys['y'] && keys['i'])
 	{
 		destroyMap();
 		setupWorld();
@@ -191,6 +191,7 @@ void testKeys()
 			exit(5);
 		}
 		initMap(level);
+		keys['i'] = 0;
 	}
 	if (skeys[GLUT_KEY_END])
 		exit(0);
