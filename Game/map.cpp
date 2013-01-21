@@ -103,6 +103,9 @@ map_doors = new std::vector<obj*>();
 				downQuadHelper(vertexes,floor_indices,at_v,at_f,x,ceiling_height,y,.5,.5,x,y,1,1);
 			}else if (*pixel==color3ub(20,20,20,255))
 			{
+				if ((int)y+1<map_size.y && (int)y-1>0 && (int)x+1<map_size.x && (int)x-1>0)
+					if ((map_data[x + width*(y+1)]==color3ub(20,20,20,255) && (map_data[x + width*(y-1)]==color3ub(20,20,20,255)) && (map_data[x+1 + width*y]==color3ub(20,20,20,255)) && (map_data[x-1 + width*y]==color3ub(20,20,20,255))))
+						continue;
 				btDefaultMotionState* wallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,middle_height,(float)y)));
 				btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(0,wallMotionState,wall,btVector3(0,0,0));
 				btRigidBody* body = new btRigidBody(rigidBodyCI);
