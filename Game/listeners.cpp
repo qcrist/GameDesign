@@ -167,7 +167,7 @@ int testForCollisions()
 					destroyMap();
 					setupWorld();
 					level++;
-					if (level >= sizeof(maps)/sizeof(const char*) || true)
+					if (level >= sizeof(maps)/sizeof(const char*))
 					{
 						glutSetCursor(GLUT_CURSOR_NONE); 
 						glutIdleFunc(NULL);
