@@ -145,8 +145,8 @@ map_doors = new std::vector<obj*>();
 			{
 				obj* o = (obj*)malloc(sizeof(obj));
 				o->pos = btVector3(x,.0,y);
-				btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,.5,(float)y)));
-				btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(0,boxMotionState,box,btVector3(0,0,0));
+				btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3((float)x,.1,(float)y)));
+				btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(0,boxMotionState,pad,btVector3(0,0,0));
 				btRigidBody* body = new btRigidBody(rigidBodyCI);
 				world->addRigidBody(body);
 				o->body = body;
@@ -340,7 +340,6 @@ void drawMap()
 
 void drawMiniMap()
 {
-	ortho();
 	glPushMatrix();
 	glLoadIdentity();
 
@@ -419,7 +418,6 @@ void drawMiniMap()
 	glEnd();
 
 	glPopMatrix();
-	projection();
 }
 
 void upQuadHelper(float*& vertexes, unsigned int*& indices, int& at_v, int& at_i,float x, float y,float z, float dx, float dz,unsigned int tsx,unsigned int tsy,float tx,float ty)

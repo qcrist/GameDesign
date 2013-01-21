@@ -84,11 +84,35 @@ void testForCollisions()
 						exit(5);
 					}
 					initMap(level);
+					return;
 				}
-				return;
 			 }
 		 }
 	  }
+}
+
+void drawKeys()
+{
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslated(window_size.x-5,10,0);
+	glBindTexture(GL_TEXTURE_2D,map_key_texture);
+	for (int i=0;i<key_count ;i++)
+	{
+		glBegin(GL_QUADS);
+		glColor4d(1,1,1,1);
+		glTexCoord2d(0,1);
+		glVertex2d(0,0);
+		glTexCoord2d(0,0);
+		glVertex2d(0,50);
+		glTexCoord2d(1,0);
+		glVertex2d(-50,50);
+		glTexCoord2d(1,1);
+		glVertex2d(-50,0);
+		glEnd();
+		glTranslated(-55,0,0);
+	}
+	glPopMatrix();
 }
 
 
@@ -106,7 +130,10 @@ void draw()
 
 	drawSky();
 	drawMap();
+	ortho();
 	drawMiniMap();
+	drawKeys();
+	projection();
 	glutSwapBuffers();
 }
 
@@ -262,12 +289,12 @@ void mousemove(int x, int y)
 		dy = dx = 0;
 	if (dx>30)
 		dx = dy = 0;
-	rot->setX(rot->getX()-dy);
+	rot->setX(rot->getX()-dy/2);
 	if (rot->getX() < -85)
 		rot->setX(-85);
 	if (rot->getX() > 85)
 		rot->setX(85);
-	rot->setY(rot->getY()-dx);
+	rot->setY(rot->getY()-dx/2);
 	//	rot.y -= dx;
 	glutWarpPointer(window_size.x/2,window_size.y/2);
 }

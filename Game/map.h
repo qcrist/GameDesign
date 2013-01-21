@@ -15,6 +15,8 @@ void drawMiniMap();
 void clearMap();
 void destroyMap();
 
+extern unsigned int map_key_texture;
+
 static const char* maps[] = {"map0.png","map1.png"};
 
 
