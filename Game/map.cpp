@@ -92,9 +92,9 @@ map_doors = new std::vector<obj*>();
 		for (unsigned int x=0;x<width;x++)
 		{
 			color3ub* pixel = map_data + (x) + width*y;
-			if (*pixel==color3ub(50,100,200,255) || *pixel==color3ub(128,128,128,255))
+			if (*pixel==color3ub(64,64,64,255) || *pixel==color3ub(128,128,128,255))
 			{
-				if (*pixel==color3ub(50,100,200,255))
+				if (*pixel==color3ub(64,64,64,255))
 				{
 					pos->setValue((float)x,1,(float)y);
 				}
@@ -131,7 +131,7 @@ map_doors = new std::vector<obj*>();
 					leftQuadHelper(vertexes,exit_indices,at_v,at_e,	x-.5,middle_height,y,1.5,.5,x,y,1,3);
 						else
 					leftQuadHelper(vertexes,wall_indices,at_v,at_w,x-.5,middle_height,y,1.5,.5,x,y,1,3);
-			}else if (*pixel==color3ub(0,255,33,255))
+			}else if (*pixel==color3ub(72,0,255,255))
 			{
 				upQuadHelper(vertexes,exit_indices,at_v,at_e,x,floor_height,y,.5,.5,x,y,1,1);
 				downQuadHelper(vertexes,exit_indices,at_v,at_e,x,ceiling_height,y,.5,.5,x,y,1,1);
@@ -208,6 +208,7 @@ map_doors = new std::vector<obj*>();
 		clear = malloc(height*width*4);
 		memset(clear,0,height*width*4);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, clear);
+		memset(clear,0,height*width*4);
 //		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,clear);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -353,7 +354,7 @@ void drawMiniMap()
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	glBegin(GL_QUADS);
-	glColor4d(0,0,0,.8);
+	glColor4d(0,0,.1,.5);
 	glTexCoord2d(1,1);
 	glVertex3d(0,0,0);
 	glTexCoord2d(0,1);
