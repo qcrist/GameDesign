@@ -42,6 +42,7 @@ std::vector<obj*>* map_doors;
 
 void initMap(int level)
 {
+	key_count = 0;
 map_keys = new std::vector<obj*>();
 map_doors = new std::vector<obj*>();
 	unsigned int width, height;
