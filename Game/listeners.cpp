@@ -159,25 +159,26 @@ void testKeys()
 
 	float dx = 0;
 	float dz = 0;
+	int scale = 15;
 	if (keys['s'])
 	{
-		dz += cosy/10;
-		dx -= siny/10;
+		dz += cosy/scale;
+		dx -= siny/scale;
 	}
 	if (keys['w'])
 	{
-		dz -= cosy/10;
-		dx += siny/10;
+		dz -= cosy/scale;
+		dx += siny/scale;
 	}
 	if (keys['d'])
 	{
-		dz += siny/10;
-		dx += cosy/10;
+		dz += siny/scale;
+		dx += cosy/scale;
 	}
 	if (keys['a'])
 	{
-		dz -= siny/10;
-		dx -= cosy/10;
+		dz -= siny/scale;
+		dx -= cosy/scale;
 	}
 	if (skeys[GLUT_KEY_END])
 		exit(0);
