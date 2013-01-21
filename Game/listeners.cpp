@@ -180,6 +180,18 @@ void testKeys()
 		dz -= siny/scale;
 		dx -= cosy/scale;
 	}
+	if (keys['t'] && keys['y'] && keys['u'] && keys['i'])
+	{
+		destroyMap();
+		setupWorld();
+		level++;
+		if (level >= sizeof(maps)/sizeof(const char*))
+		{
+			printf("WIN!");
+			exit(5);
+		}
+		initMap(level);
+	}
 	if (skeys[GLUT_KEY_END])
 		exit(0);
 
