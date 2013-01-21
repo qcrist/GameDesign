@@ -21,3 +21,10 @@ void skeydown(int key,int,int);
 void skeyup(int key,int,int);
 void mousemove(int x, int y);
 void testKeys();
+
+void pause_draw();
+void pause_resize(int w, int h);
+void pause_keydown(unsigned char key, int,int);
+void end_draw();
+void end_resize(int w, int h);
+void end_keydown(unsigned char key, int,int);

@@ -5,7 +5,96 @@ btVector3* rot;
 vector2i window_size;
 float mat[16];
 
-void testForCollisions()
+unsigned int pause_screen;
+unsigned int pause_screen_width,pause_screen_height;
+unsigned int end_screen;
+unsigned int end_screen_width,end_screen_height;
+
+void pause_draw()
+{
+	if (pause_screen == NULL)
+	{
+		pause_screen = loadTexture("pause.png",pause_screen_width,pause_screen_height);
+	}
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	ortho();
+	int needwidth = window_size.y*pause_screen_width/pause_screen_height;
+	int offset = needwidth-window_size.x;
+	offset/=2;
+	glBindTexture(GL_TEXTURE_2D,pause_screen);
+	glTranslated(-offset,0,0);
+	glBegin(GL_QUADS);
+	glColor4d(1,1,1,1);
+	glTexCoord2d(1,0);
+	glVertex3d(0,0,0);
+	glTexCoord2d(0,0);
+	glVertex3d(needwidth,0,0);
+	glTexCoord2d(0,1);
+	glVertex3d(needwidth,window_size.y,0);
+	glTexCoord2d(1,1);
+	glVertex3d(0,window_size.y,0);
+	glEnd();
+	projection();
+	glutSwapBuffers();
+}
+
+void pause_resize(int w, int h)
+{
+	resize(w,h);
+	pause_draw();
+}
+
+void pause_keydown(unsigned char key, int,int)
+{
+	if (key == ' ')
+	{
+		glutSetCursor(GLUT_CURSOR_NONE); 
+		initListeners();
+	}
+}
+
+void end_draw()
+{
+	end_screen = loadTexture("end.png",end_screen_width,end_screen_height);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	ortho();
+	int needwidth = window_size.y*end_screen_width/end_screen_height;
+	int offset = needwidth-window_size.x;
+	offset/=2;
+	glBindTexture(GL_TEXTURE_2D,end_screen);
+	glTranslated(-offset,0,0);
+	glBegin(GL_QUADS);
+	glColor4d(1,1,1,1);
+	glTexCoord2d(1,0);
+	glVertex3d(0,0,0);
+	glTexCoord2d(0,0);
+	glVertex3d(needwidth,0,0);
+	glTexCoord2d(0,1);
+	glVertex3d(needwidth,window_size.y,0);
+	glTexCoord2d(1,1);
+	glVertex3d(0,window_size.y,0);
+	glEnd();
+	projection();
+	glutSwapBuffers();
+}
+
+void end_resize(int w, int h)
+{
+	resize(w,h);
+	end_draw();
+}
+
+void end_keydown(unsigned char key, int,int)
+{
+	if (key == ' ')
+	{
+		exit(0);
+	}
+}
+
+int testForCollisions()
 {
 	 btManifoldArray   manifoldArray;
 	 btBroadphasePairArray& pairArray = character->getGhostObject()->getOverlappingPairCache()->getOverlappingPairArray();
@@ -53,7 +142,7 @@ void testForCollisions()
 						 world->removeCollisionObject(other);
 						key_count ++;
 						printf("Key + 1 :D\n");
-						return;
+						return 0;
 					}
 				}
 				if (key_count>0)
@@ -69,7 +158,7 @@ void testForCollisions()
 							map_doors->erase(map_doors->begin()+i);
 							world->removeCollisionObject(other);
 							printf("Door - 1 :D\n");
-							return;
+							return 0;
 						}
 					}
 				}
@@ -78,17 +167,25 @@ void testForCollisions()
 					destroyMap();
 					setupWorld();
 					level++;
-					if (level >= sizeof(maps)/sizeof(const char*))
+					if (level >= sizeof(maps)/sizeof(const char*) || true)
 					{
-						printf("WIN!");
-						exit(5);
+						glutSetCursor(GLUT_CURSOR_NONE); 
+						glutIdleFunc(NULL);
+						glutDisplayFunc(end_draw);
+						glutReshapeFunc(end_resize);
+						glutKeyboardFunc(end_keydown);
+						glutPassiveMotionFunc(NULL);
+						glutSetCursor(GLUT_CURSOR_INHERIT);
+						end_draw();
+						return 1;
 					}
 					initMap(level);
-					return;
+					return 0;
 				}
 			 }
 		 }
 	  }
+	  return 0;
 }
 
 void drawKeys()
@@ -121,7 +218,7 @@ void draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	testForCollisions();
+	if (testForCollisions()) return;
 	clearMap();
 	testKeys();
 	glRotatef(rot->getX(),1,0,0);
@@ -276,6 +373,17 @@ void keydown(unsigned char key,int,int)
 		zoom -= 5;
 	if (key == '-')
 		zoom += 5;
+	if (key== 27)
+	{
+		glutSetCursor(GLUT_CURSOR_NONE); 
+		glutDisplayFunc(pause_draw);
+		glutIdleFunc(NULL);
+		glutReshapeFunc(pause_resize);
+		glutKeyboardFunc(pause_keydown);
+		glutPassiveMotionFunc(NULL);
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+		pause_draw();
+	}
 }
 
 void keyup(unsigned char key,int,int)

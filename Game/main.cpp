@@ -3,6 +3,55 @@
 btKinematicCharacterController* character;
 btDiscreteDynamicsWorld* world;
 int level = 0;
+unsigned int start_screen;
+unsigned int start_screen_width;
+unsigned int start_screen_height;
+
+void start_draw()
+{
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	ortho();
+	int needwidth = window_size.y*start_screen_width/start_screen_height;
+	int offset = needwidth-window_size.x;
+	offset/=2;
+	glBindTexture(GL_TEXTURE_2D,start_screen);
+	glTranslated(-offset,0,0);
+	glBegin(GL_QUADS);
+	glColor4d(1,1,1,1);
+	glTexCoord2d(1,0);
+	glVertex3d(0,0,0);
+	glTexCoord2d(0,0);
+	glVertex3d(needwidth,0,0);
+	glTexCoord2d(0,1);
+	glVertex3d(needwidth,window_size.y,0);
+	glTexCoord2d(1,1);
+	glVertex3d(0,window_size.y,0);
+	glEnd();
+	projection();
+	glutSwapBuffers();
+}
+
+void start_resize(int w, int h)
+{
+	resize(w,h);
+	start_draw();
+}
+
+void start_keydown(unsigned char key, int,int)
+{
+	if (key == ' ')
+	{
+		glutSetCursor(GLUT_CURSOR_NONE); 
+		glutDisplayFunc(pause_draw);
+		glutIdleFunc(NULL);
+		glutReshapeFunc(pause_resize);
+		glutKeyboardFunc(pause_keydown);
+		glutPassiveMotionFunc(NULL);
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+		pause_draw();
+	}
+}
 
 int main(int argc, char** args)
 {
@@ -13,7 +62,7 @@ int main(int argc, char** args)
 	glutInitWindowSize(800,600);
 	glutCreateWindow("OpenGL Window\n");
 	initListeners();
-	glutSetCursor(GLUT_CURSOR_NONE); 
+//	glutSetCursor(GLUT_CURSOR_NONE); 
 
 	//GLEW
 	glewInit();
@@ -24,9 +73,17 @@ int main(int argc, char** args)
 	glEnable(GL_TEXTURE_2D);
 	glDepthFunc(GL_LEQUAL);
 	glPolygonMode(GL_BACK,GL_LINE);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+
+	glutDisplayFunc(start_draw);
+	glutIdleFunc(NULL);
+	glutReshapeFunc(start_resize);
+	glutKeyboardFunc(start_keydown);
+	glutPassiveMotionFunc(NULL);
+	start_screen = loadTexture("start.png",start_screen_width,start_screen_height);
+
 	//glEnable (GL_FOG); //enable the fog
 
 	glFogi (GL_FOG_MODE, GL_EXP2); 
