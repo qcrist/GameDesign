@@ -332,7 +332,8 @@ void fps()
 		float current_fps = CLOCKS_PER_SEC/(float)(now-last_frame);
 		last_frame = clock();
 		char buf[50];
-		sprintf(buf,"FPS: %f",current_fps);
+//		sprintf(buf,"FPS: %f",current_fps);
+		sprintf(buf,"Level %d (Made by %s)",level+1,maps_by[level]);
 		glutSetWindowTitle(buf);
 		world->stepSimulation(spent);
 		draw();
