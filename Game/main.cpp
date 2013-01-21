@@ -73,7 +73,7 @@ int main(int argc, char** args)
 	glEnable(GL_TEXTURE_2D);
 	glDepthFunc(GL_LEQUAL);
 	glPolygonMode(GL_BACK,GL_LINE);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
