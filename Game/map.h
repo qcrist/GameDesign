@@ -17,8 +17,8 @@ void destroyMap();
 
 extern unsigned int map_key_texture;
 
-static const char* maps[] = {"map0.png","map1.png","map2.png","map3.png","map4.png","map5.png","map6.png"};
-static const char* maps_by[] = {"Quintin","Brian","Quintin","Blake","Tripp","Quintin","Brian"};
+static const char* maps[] = {"map0.png","map1.png","map2.png","map3.png","map4.png","map5.png","map6.png","map7.png","map8.png","map9.png","map10.png"};
+static const char* maps_by[] = {"Quintin","Brian","Quintin","Blake","Tripp","Quintin","Brian","Tripp","Blake","Quintin","Brian"};
 
 
 void upQuadHelper(float*& vertexes, unsigned int*& indices, int& at_v, int& at_i,float x, float y,float z, float dx, float dz,unsigned int tsx,unsigned int tsy,float tx,float ty);
