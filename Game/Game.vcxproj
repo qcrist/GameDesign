@@ -60,7 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)\LibPNG\;$(SolutionDir)\BulletPhysics;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\LibPNG\;$(SolutionDir)\BulletPhysics\;$(SolutionDir)\Glew\;$(SolutionDir)\Freeglut\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
