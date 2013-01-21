@@ -27,7 +27,7 @@ int main(int argc, char** args)
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	glEnable (GL_FOG); //enable the fog
+	//glEnable (GL_FOG); //enable the fog
 
 	glFogi (GL_FOG_MODE, GL_EXP2); 
 	GLfloat fogColor[4] = {0, 0.0, 0.0, 1.0};

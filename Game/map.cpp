@@ -228,7 +228,7 @@ map_doors = new std::vector<obj*>();
 		btRigidBody* floorBody = new btRigidBody(groundRigidBodyCI);
 		world->addRigidBody(floorBody);
 
-		/*
+		
 		btCollisionShape* xpos = new btStaticPlaneShape(btVector3(1,0,0),-.5);
 		btCollisionShape* xneg = new btStaticPlaneShape(btVector3(-1,0,0),-(map_size.x-.5f));
 		btCollisionShape* zpos = new btStaticPlaneShape(btVector3(0,0,1),-.5);
@@ -249,7 +249,7 @@ map_doors = new std::vector<obj*>();
 		world->addRigidBody(xnegBody);
 		world->addRigidBody(zposBody);
 		world->addRigidBody(znegBody);
-		*/
+		
 }
 
 void destroyMap()
