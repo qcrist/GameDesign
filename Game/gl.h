@@ -1,7 +1,8 @@
 #pragma once
 
 #include <gl/glew.h>
-#include <GL/glut.h>
+#include <gl/freeglut_std.h>
+#include <gl/freeglut_ext.h>
 
 #undef glGenBuffers
 #undef glCreateBuffer

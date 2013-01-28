@@ -392,6 +392,8 @@ void keydown(unsigned char key,int,int)
 		glutSetCursor(GLUT_CURSOR_INHERIT);
 		pause_draw();
 	}
+	if (key == '`')
+		glutFullScreenToggle();
 }
 
 void keyup(unsigned char key,int,int)
